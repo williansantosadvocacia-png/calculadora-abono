@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Abono de permanência no 13º e no terço de férias</title>
+  <meta name="description" content="Estimativa, para servidor público federal, das parcelas de 13º e terço de férias sobre o abono de permanência (Tema 1.233 do STJ). Correção pelo IPCA-E e pela SELIC do Banco Central.">
+  <meta name="theme-color" content="#1c4c44">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c4c44'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-size='16' fill='%23f6f3ee'%3E13%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --ink: #1c2830;
+      --muted: #5c6770;
+      --line: #d8d0c4;
+      --paper: #fffdf9;
+      --warn: #f3ead8;
+      --warn-ink: #3d3426;
+      --green: #1c4c44;
+      --green-hover: #153b35;
+      --green-soft: #e8efe8;
+      --whatsapp: #128c46;
+      --radius: 14px;
+      --shadow: 0 1px 2px rgba(28, 40, 48, .06);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+    body {
+      font-family: "Source Sans 3", "Segoe UI", sans-serif;
+      font-size: 17px;
+      line-height: 1.5;
+    }
+    h1, h2, .serif { font-family: Newsreader, Georgia, serif; font-weight: 600; letter-spacing: -0.02em; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-size: clamp(1.85rem, 4vw, 2.35rem); line-height: 1.2; margin: 0 0 .75rem; }
+    .lead { margin: 0 0 1.25rem; color: var(--ink); }
+    .disclaimer {
+      background: var(--warn);
+      color: var(--warn-ink);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      margin: 0 0 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .disclaimer strong { font-weight: 700; }
+    .status { color: var(--muted); font-size: .95rem; margin: 0 0 1.25rem; min-height: 1.4em; }
+    .status.ok { color: #1c4c44; }
+    .status.err { color: #8a2b2b; }
+    label { display: block; font-weight: 700; margin: 1rem 0 .4rem; }
+    input[type="date"], input[type="text"], input[type="number"], select {
+      width: 100%;
+      font: inherit;
+      padding: .7rem .85rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    input:focus, select:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+    .check {
+      display: flex;
+      gap: .7rem;
+      align-items: flex-start;
+      margin: 1.1rem 0;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    .check input { margin-top: .25rem; width: 1.1rem; height: 1.1rem; accent-color: var(--green); flex: none; }
+    .hint { color: var(--muted); font-size: .95rem; margin: 0 0 1.25rem; }
+    .years { display: none; margin: 0 0 1rem; padding: .5rem 0 0; }
+    .years.open { display: block; }
+    .year-row { display: grid; grid-template-columns: 5rem 1fr; gap: .6rem; align-items: center; margin-bottom: .5rem; }
+    .year-row span { font-weight: 600; }
+    button.calc {
+      display: block;
+      width: 100%;
+      margin: 1.25rem 0 1.5rem;
+      background: var(--green);
+      color: #f6f3ee;
+      font: inherit;
+      font-weight: 700;
+      font-size: 1.05rem;
+      border: 0;
+      border-radius: 12px;
+      padding: .95rem 1rem;
+      cursor: pointer;
+    }
+    button.calc:hover { background: var(--green-hover); }
+    button.calc:disabled { opacity: .55; cursor: not-allowed; }
+    details {
+      border-top: 1px solid var(--line);
+      padding: .85rem 0;
+      margin: 0 0 1.25rem;
+    }
+    details summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+    details .body { color: var(--muted); font-size: .98rem; padding-top: .7rem; }
+    details .body p { margin: 0 0 .7rem; }
+    details .body p:last-child { margin-bottom: 0; }
+    #resultado { display: none; }
+    #resultado.show { display: block; }
+    h2 { font-size: 1.7rem; margin: .4rem 0 .5rem; }
+    .range { color: var(--muted); font-size: .98rem; margin: 0 0 1rem; }
+    .total {
+      background: var(--green);
+      color: #f4f7f4;
+      border-radius: var(--radius);
+      padding: 1.15rem 1.25rem 1.2rem;
+      margin: 0 0 1.25rem;
+    }
+    .total .k { margin: 0; font-size: .95rem; opacity: .9; }
+    .total .v {
+      font-family: Newsreader, Georgia, serif;
+      font-size: clamp(2rem, 6vw, 2.6rem);
+      font-weight: 600;
+      margin: .15rem 0 .35rem;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .total .n { margin: 0; font-size: .95rem; opacity: .9; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    th, td { text-align: right; padding: .7rem .45rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th:first-child, td:first-child { text-align: left; }
+    th { font-weight: 600; color: var(--muted); font-size: .82rem; }
+    td .sub { display: block; color: var(--muted); font-size: .82rem; font-weight: 400; }
+    .cards { display: none; }
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: .9rem 1rem;
+      margin: 0 0 .7rem;
+    }
+    .card h3 { margin: 0 0 .55rem; font-size: 1rem; font-family: inherit; font-weight: 700; }
+    .card h3 .sub { font-weight: 400; color: var(--muted); }
+    .kv { display: flex; justify-content: space-between; gap: 1rem; padding: .2rem 0; }
+    .kv span:first-child { color: var(--muted); }
+    .whats {
+      display: block;
+      text-align: center;
+      background: var(--whatsapp);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: .95rem 1rem;
+      margin: 1.5rem 0 0;
+    }
+    .whats:hover { filter: brightness(1.05); }
+    footer {
+      margin-top: 2.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    footer .name { color: var(--ink); font-weight: 700; margin: 0 0 .35rem; }
+    footer p { margin: 0 0 .45rem; }
+    .errbox { color: #8a2b2b; margin: 1rem 0; }
+    @media (max-width: 720px) {
+      .table-wrap { display: none; }
+      .cards { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Abono de permanência no 13º e no terço de férias</h1>
+    <p class="lead">Estimativa para servidor público federal, no Tema 1.233 do STJ. A conta supõe que o abono mensal foi pago e que o 13º e o terço de férias não incidiram sobre ele.</p>
+
+    <div class="disclaimer">
+      <strong>Estimativa simplificada.</strong> Não é consulta nem parecer. O valor depende dos documentos e do que já foi pago. Nada aqui promete um resultado.
+    </div>
+
+    <p class="status" id="status">Buscando IPCA-E e SELIC no Banco Central…</p>
+
+    <form id="form" autocomplete="off">
+      <label for="dataCalculo">Data do cálculo</label>
+      <input type="date" id="dataCalculo" required>
+
+      <label for="inicioAbono">Início do abono</label>
+      <input type="date" id="inicioAbono" required>
+
+      <label for="valorAbono">Valor mensal do abono</label>
+      <input type="text" id="valorAbono" inputmode="decimal" placeholder="ex.: 2.450,00" required>
+
+      <label class="check">
+        <input type="checkbox" id="valoresAno">
+        <span>O valor do abono mudou ao longo dos anos. Quero informar ano a ano.</span>
+      </label>
+      <div class="years" id="anosBox"></div>
+
+      <label class="check">
+        <input type="checkbox" id="feriasJan" checked>
+        <span>Não sei o mês das férias. Usar janeiro e marcar como estimativa.</span>
+      </label>
+      <div id="mesFeriasBox" hidden>
+        <label for="mesFerias">Mês das férias</label>
+        <select id="mesFerias">
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+      </div>
+
+      <p class="hint">O 13º entra em novembro, no valor de um mês. O terço entra como um terço do abono, no mês das férias. Só os últimos 5 anos, a partir do início do abono. Sem avos.</p>
+
+      <button type="submit" class="calc" id="btnCalc" disabled>Calcular estimativa</button>
+    </form>
+
+    <details>
+      <summary>Como esta conta é feita</summary>
+      <div class="body">
+        <p>Para cada ano, no período dos últimos cinco anos a partir do início do abono, entra uma parcela de 13º (igual ao abono do mês, em novembro) e uma parcela de 1/3 de férias (um terço do abono, no mês das férias). Não há avos.</p>
+        <p>A correção monetária é o IPCA-E (série 10764 do Banco Central), acumulado do mês seguinte ao da parcela até novembro de 2021. A partir de dezembro de 2021, pela EC 113/2021, incide a SELIC mensal (série 4390), em soma simples, do mês da parcela (ou de dezembro de 2021, o que for posterior) até o mês anterior à data do cálculo.</p>
+        <p>Se a data do cálculo cair no mês corrente, ainda não fechado na série, esse mês entra com 1%, e não com o percentual parcial. Os índices são lidos no seu navegador, direto na API do Banco Central, e a data da consulta aparece acima do formulário.</p>
+        <p>Isto é uma estimativa informal, nos termos do Provimento OAB 205/2021. Os valores que você digita não são enviados a nenhum servidor: o cálculo roda só no seu aparelho (LGPD).</p>
+      </div>
+    </details>
+
+    <section id="resultado" aria-live="polite">
+      <h2>Resultado</h2>
+      <p class="range" id="rangeTxt"></p>
+      <div class="total">
+        <p class="k">Total estimado</p>
+        <p class="v" id="totalVal"></p>
+        <p class="n">Soma das linhas, com correção e SELIC. Não é um valor a receber confirmado.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Parcela</th>
+              <th>Original</th>
+              <th>Correção monetária</th>
+              <th>Valor corrigido</th>
+              <th>SELIC</th>
+              <th>Valor da SELIC</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="cards" id="cards"></div>
+      <a class="whats" id="whatsRes" href="https://wa.me/5561986184237?text=Ol%C3%A1%2C%20fiz%20a%20estimativa%20do%20abono%20de%20perman%C3%AAncia%20no%2013%C2%BA%20e%20no%20ter%C3%A7o%20de%20f%C3%A9rias%20e%20gostaria%20de%20conversar." target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
+    </section>
+
+    <p class="errbox" id="erro" hidden></p>
+
+    <footer>
+      <p class="name">Willian Santos – OAB/DF 74.400</p>
+      <p>Atendimento em Brasília. Projeto pessoal, de caráter informativo.</p>
+      <p>Estimativa feita no seu navegador. Não substitui consulta ou parecer (Provimento OAB 205/2021). Dados não são enviados a servidor (LGPD).</p>
+      <a class="whats" href="https://wa.me/5561986184237" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
+    </footer>
+  </main>
+
+  <script>
+  (function () {
+    const IPCA_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.10764/dados?formato=json";
+    const SELIC_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.4390/dados?formato=json";
+    const IPCA_END = "2021-11";
+    const SELIC_START = "2021-12";
+
+    const el = (id) => document.getElementById(id);
+    const statusEl = el("status");
+    const form = el("form");
+    const btn = el("btnCalc");
+    const erro = el("erro");
+
+    let ipca = {};
+    let selic = {};
+    let fetchedAt = null;
+
+    function todayISO() {
+      const d = new Date();
+      const z = (n) => String(n).padStart(2, "0");
+      return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate());
+    }
+    function ym(iso) { return iso.slice(0, 7); }
+    function ymParts(s) {
+      const [y, m] = s.split("-").map(Number);
+      return { y, m };
+    }
+    function addMonths(s, k) {
+      let { y, m } = ymParts(s);
+      const t = y * 12 + (m - 1) + k;
+      y = Math.floor(t / 12);
+      m = (t % 12) + 1;
+      return y + "-" + String(m).padStart(2, "0");
+    }
+    function cmp(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
+    function monthsBetweenInclusive(start, end) {
+      const out = [];
+      if (cmp(start, end) > 0) return out;
+      let m = start;
+      while (cmp(m, end) <= 0) {
+        out.push(m);
+        m = addMonths(m, 1);
+      }
+      return out;
+    }
+    function parseMoney(str) {
+      if (str == null) return NaN;
+      let s = String(str).trim();
+      if (!s) return NaN;
+      s = s.replace(/\s/g, "").replace(/R\$/i, "");
+      if (s.indexOf(",") >= 0) {
+        s = s.replace(/\./g, "").replace(",", ".");
+      } else if ((s.match(/\./g) || []).length > 1) {
+        s = s.replace(/\./g, "");
+      }
+      const n = Number(s);
+      return Number.isFinite(n) ? n : NaN;
+    }
+    function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
+    function fmtBRL(n) {
+      return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+    function fmtMes(s) {
+      const { y, m } = ymParts(s);
+      const nomes = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+      return nomes[m - 1] + "/" + y;
+    }
+    function fmtMesLongo(s) {
+      const { y, m } = ymParts(s);
+      const nomes = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+      return nomes[m - 1] + " de " + y;
+    }
+    function fmtPct(n) {
+      return n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
+    }
+    function fmtFator(n) {
+      if (Math.abs(n - 1) < 1e-12) return "—";
+      return n.toLocaleString("pt-BR", { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+    }
+
+    function parseBCB(json) {
+      const map = {};
+      for (const row of json) {
+        const [d, m, y] = row.data.split("/");
+        map[y + "-" + m] = Number(String(row.valor).replace(",", "."));
+      }
+      return map;
+    }
+
+    function currentYM() {
+      const d = new Date();
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+    }
+
+    function valorNoMes(mes, unico, porAno) {
+      if (porAno) {
+        const y = String(ymParts(mes).y);
+        if (porAno[y] != null && !Number.isNaN(porAno[y])) return porAno[y];
+      }
+      return unico;
+    }
+
+    function ipcaFactor(parcelYM) {
+      const start = addMonths(parcelYM, 1);
+      let f = 1;
+      if (cmp(start, IPCA_END) > 0) return 1;
+      for (const m of monthsBetweenInclusive(start, IPCA_END)) {
+        if (ipca[m] != null) f *= (1 + ipca[m] / 100);
+      }
+      return f;
+    }
+
+    function selicSum(parcelYM, calcYM) {
+      const start = cmp(parcelYM, SELIC_START) >= 0 ? parcelYM : SELIC_START;
+      const endOfficial = addMonths(calcYM, -1);
+      let s = 0;
+      if (cmp(start, endOfficial) <= 0) {
+        for (const m of monthsBetweenInclusive(start, endOfficial)) {
+          if (selic[m] != null) s += selic[m];
+        }
+      }
+      const now = currentYM();
+      const open = cmp(calcYM, now) >= 0 || selic[calcYM] == null;
+      if (open) s += 1;
+      return s;
+    }
+
+    function montarParcelas(inicioISO, calcISO, unico, porAno, mesFerias, feriasEstimativa) {
+      const startYM = ym(inicioISO);
+      const calcYM = ym(calcISO);
+      const floorYM = addMonths(calcYM, -60);
+      const fromYM = cmp(startYM, floorYM) >= 0 ? startYM : floorYM;
+      const list = [];
+      const startYear = ymParts(fromYM).y;
+      const endYear = ymParts(calcYM).y;
+
+      for (let y = startYear; y <= endYear + 1; y++) {
+        const feriasYM = y + "-" + String(mesFerias).padStart(2, "0");
+        if (cmp(feriasYM, fromYM) >= 0 && cmp(feriasYM, calcYM) <= 0 && cmp(feriasYM, startYM) >= 0) {
+          const v = valorNoMes(feriasYM, unico, porAno);
+          list.push({
+            ym: feriasYM,
+            tipo: "1/3 de férias",
+            estimativa: feriasEstimativa,
+            original: v / 3
+          });
+        }
+        const dezYM = y + "-11";
+        if (cmp(dezYM, fromYM) >= 0 && cmp(dezYM, calcYM) <= 0 && cmp(dezYM, startYM) >= 0) {
+          const v = valorNoMes(dezYM, unico, porAno);
+          list.push({
+            ym: dezYM,
+            tipo: "13º",
+            estimativa: false,
+            original: v
+          });
+        }
+      }
+      list.sort((a, b) => cmp(a.ym, b.ym) || (a.tipo < b.tipo ? -1 : 1));
+      return list.map((p) => {
+        const fator = ipcaFactor(p.ym);
+        const corrigido = round2(p.original * fator);
+        const selicPct = selicSum(p.ym, calcYM);
+        const valorSelic = round2(corrigido * selicPct / 100);
+        return {
+          ...p,
+          original: round2(p.original),
+          fator,
+          corrigido,
+          selicPct: round2(selicPct),
+          valorSelic,
+          total: round2(corrigido + valorSelic)
+        };
+      });
+    }
+
+    function renderAnos() {
+      const box = el("anosBox");
+      const inicio = el("inicioAbono").value;
+      const calc = el("dataCalculo").value;
+      const unico = parseMoney(el("valorAbono").value);
+      if (!el("valoresAno").checked || !inicio || !calc) {
+        box.classList.remove("open");
+        box.innerHTML = "";
+        return;
+      }
+      const y0 = ymParts(ym(inicio)).y;
+      const y1 = ymParts(ym(calc)).y;
+      const prev = {};
+      box.querySelectorAll("input[data-ano]").forEach((inp) => {
+        prev[inp.dataset.ano] = inp.value;
+      });
+      box.innerHTML = "";
+      for (let y = y0; y <= y1; y++) {
+        const row = document.createElement("div");
+        row.className = "year-row";
+        const lab = document.createElement("span");
+        lab.textContent = String(y);
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.inputMode = "decimal";
+        inp.dataset.ano = String(y);
+        inp.value = prev[String(y)] || (!Number.isNaN(unico) ? unico.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "");
+        row.append(lab, inp);
+        box.appendChild(row);
+      }
+      box.classList.add("open");
+    }
+
+    function lerPorAno() {
+      if (!el("valoresAno").checked) return null;
+      const map = {};
+      el("anosBox").querySelectorAll("input[data-ano]").forEach((inp) => {
+        map[inp.dataset.ano] = parseMoney(inp.value);
+      });
+      return map;
+    }
+
+    function setStatus(msg, kind) {
+      statusEl.textContent = msg;
+      statusEl.className = "status" + (kind ? " " + kind : "");
+    }
+
+    async function carregarIndices() {
+      setStatus("Buscando IPCA-E e SELIC no Banco Central…");
+      btn.disabled = true;
+      try {
+        const [r1, r2] = await Promise.all([fetch(IPCA_URL), fetch(SELIC_URL)]);
+        if (!r1.ok || !r2.ok) throw new Error("HTTP " + r1.status + "/" + r2.status);
+        ipca = parseBCB(await r1.json());
+        selic = parseBCB(await r2.json());
+        fetchedAt = new Date();
+        const when = fetchedAt.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+        const lastSelic = Object.keys(selic).sort().pop();
+        const lastIpca = Object.keys(ipca).sort().pop();
+        setStatus("Índices do Banco Central (IPCA-E série 10764, última " + fmtMes(lastIpca) + "; SELIC série 4390, última " + fmtMes(lastSelic) + "). Consulta em " + when + ".", "ok");
+        btn.disabled = false;
+      } catch (e) {
+        setStatus("Não foi possível ler os índices do Banco Central. Verifique a conexão e recarregue a página.", "err");
+        btn.disabled = true;
+      }
+    }
+
+    el("dataCalculo").value = todayISO();
+    el("feriasJan").addEventListener("change", () => {
+      el("mesFeriasBox").hidden = el("feriasJan").checked;
+    });
+    el("valoresAno").addEventListener("change", renderAnos);
+    el("inicioAbono").addEventListener("change", renderAnos);
+    el("dataCalculo").addEventListener("change", renderAnos);
+    el("valorAbono").addEventListener("change", () => {
+      if (el("valoresAno").checked) renderAnos();
+    });
+
+    form.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      erro.hidden = true;
+      const calcISO = el("dataCalculo").value;
+      const inicioISO = el("inicioAbono").value;
+      const unico = parseMoney(el("valorAbono").value);
+      const feriasEstimativa = el("feriasJan").checked;
+      const mesFerias = feriasEstimativa ? 1 : Number(el("mesFerias").value);
+      const porAno = lerPorAno();
+
+      if (!calcISO || !inicioISO) {
+        erro.textContent = "Preencha a data do cálculo e o início do abono.";
+        erro.hidden = false;
+        return;
+      }
+      if (Number.isNaN(unico) || unico <= 0) {
+        erro.textContent = "Informe o valor mensal do abono.";
+        erro.hidden = false;
+        return;
+      }
+      if (porAno) {
+        for (const k of Object.keys(porAno)) {
+          if (Number.isNaN(porAno[k]) || porAno[k] <= 0) {
+            erro.textContent = "Preencha o valor do abono em todos os anos.";
+            erro.hidden = false;
+            return;
+          }
+        }
+      }
+      if (cmp(ym(inicioISO), ym(calcISO)) > 0) {
+        erro.textContent = "O início do abono não pode ser depois da data do cálculo.";
+        erro.hidden = false;
+        return;
+      }
+
+      const linhas = montarParcelas(inicioISO, calcISO, unico, porAno, mesFerias, feriasEstimativa);
+      if (!linhas.length) {
+        erro.textContent = "Não há parcelas no período dos últimos 5 anos.";
+        erro.hidden = false;
+        el("resultado").classList.remove("show");
+        return;
+      }
+
+      const soma = round2(linhas.reduce((a, l) => a + l.total, 0));
+      el("totalVal").textContent = fmtBRL(soma);
+      const first = linhas[0].ym;
+      const last = linhas[linhas.length - 1].ym;
+      const calcYM = ym(calcISO);
+      const now = currentYM();
+      const open = cmp(calcYM, now) >= 0 || selic[calcYM] == null;
+      let range = "Parcelas de " + fmtMesLongo(first) + " a " + fmtMesLongo(last) + ".";
+      if (open) {
+        range += " " + fmtMesLongo(calcYM) + " ainda não fechou: a SELIC desse mês entrou com 1%, sem dividir pelos dias já decorridos.";
+      }
+      el("rangeTxt").textContent = range;
+
+      const tbody = el("tbody");
+      tbody.innerHTML = "";
+      const cards = el("cards");
+      cards.innerHTML = "";
+
+      for (const l of linhas) {
+        const est = l.estimativa ? " · estimativa" : "";
+        const tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td>" + fmtMes(l.ym) + "<span class=\"sub\">" + l.tipo + est + "</span></td>" +
+          "<td>" + fmtBRL(l.original) + "</td>" +
+          "<td>" + fmtFator(l.fator) + "</td>" +
+          "<td>" + fmtBRL(l.corrigido) + "</td>" +
+          "<td>" + fmtPct(l.selicPct) + "</td>" +
+          "<td>" + fmtBRL(l.valorSelic) + "</td>" +
+          "<td>" + fmtBRL(l.total) + "</td>";
+        tbody.appendChild(tr);
+
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML =
+          "<h3>" + l.tipo + " de " + fmtMesLongo(l.ym) + (l.estimativa ? " <span class=\"sub\">· estimativa</span>" : "") + "</h3>" +
+          "<div class=\"kv\"><span>Original</span><span>" + fmtBRL(l.original) + "</span></div>" +
+          "<div class=\"kv\"><span>Correção</span><span>" + fmtFator(l.fator) + "</span></div>" +
+          "<div class=\"kv\"><span>Valor corrigido</span><span>" + fmtBRL(l.corrigido) + "</span></div>" +
+          "<div class=\"kv\"><span>SELIC</span><span>" + fmtPct(l.selicPct) + "</span></div>" +
+          "<div class=\"kv\"><span>Valor da SELIC</span><span>" + fmtBRL(l.valorSelic) + "</span></div>" +
+          "<div class=\"kv\"><span>Total</span><span>" + fmtBRL(l.total) + "</span></div>";
+        cards.appendChild(card);
+      }
+
+      el("resultado").classList.add("show");
+      el("resultado").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    carregarIndices();
+  })();
+  </script>
+</body>
+</html>
